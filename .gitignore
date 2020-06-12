@@ -145,5 +145,5 @@ cython_debug/
 
 # Custom ignores
 outputs/
-mesh/
+mesh/*_r*.vtk
 
