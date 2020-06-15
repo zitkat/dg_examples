@@ -51,8 +51,8 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u': ('unknown field', 'f', 0, 1),
-        'v': ('test field', 'f', 'u'),
+        'p': ('unknown field', 'f', 0, 1),
+        'v': ('test field', 'f', 'p'),
     }
 
     def analytic_sol(coors, t):
@@ -69,7 +69,7 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     def get_ic(x, ic=None):
         return gsmooth(x[..., 0:1]) * gsmooth(x[..., 1:])
@@ -80,13 +80,13 @@ def define(filename_mesh=None,
     }
 
     ics = {
-        'ic': ('Omega', {'u.0': 'get_ic'}),
+        'ic': ('Omega', {'p.0': 'get_ic'}),
     }
 
     dgepbc_1 = {
         'name': 'u_rl',
         'region': ['right', 'left'],
-        'dofs': {'u.all': 'u.all'},
+        'dofs': {'p.all': 'p.all'},
         'match': 'match_y_line',
     }
 
@@ -96,9 +96,9 @@ def define(filename_mesh=None,
 
     equations = {
         'Advection': """
-                       dw_volume_dot.i.Omega(v, u)
-                       - dw_s_dot_mgrad_s.i.Omega(a.val, u[-1], v)
-                       + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, u[-1]) = 0
+                       dw_volume_dot.i.Omega(v, p)
+                       - dw_s_dot_mgrad_s.i.Omega(a.val, p[-1], v)
+                       + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, p[-1]) = 0
                       """
     }
 

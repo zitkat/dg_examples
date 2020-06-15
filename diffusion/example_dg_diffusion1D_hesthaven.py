@@ -4,7 +4,7 @@ Simple example for second order ODE
 
     du^2/dx^2 = g
 
-    u(0) = u(1) = 0
+    p(0) = p(1) = 0
     du/dx(0) = du/dx(0) = 2*pi
 
 """
@@ -56,19 +56,19 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u' : ('unknown field', 'f', 0, 1),
-        'v' : ('test field',    'f', 'u'),
+        'p' : ('unknown field', 'f', 0, 1),
+        'v' : ('test field',    'f', 'p'),
     }
 
     # dgebcs = {
-    #     'u_left': ('left', {'u.all': 0, 'grad.u.all': 0}),
-    #     'u_right': ('right', {'u.all': 0, 'grad.u.all': 0}),
+    #     'u_left': ('left', {'p.all': 0, 'grad.p.all': 0}),
+    #     'u_right': ('right', {'p.all': 0, 'grad.p.all': 0}),
     # }
 
     dgepbc_1 = {
         'name'  : 'u_rl',
         'region': ['right', 'left'],
-        'dofs': {'u.all': 'u.all'},
+        'dofs': {'p.all': 'p.all'},
         'match': 'match_y_line',
     }
 
@@ -77,14 +77,14 @@ def define(filename_mesh=None,
     }
 
     equations = {
-        'diffusion': " dw_volume_dot.i.Omega(v, u) " +
+        'diffusion': " dw_volume_dot.i.Omega(v, p) " +
 
-                     " + dw_laplace.i.Omega(D.val, v, u[-1]) " +
-                     " - dw_dg_diffusion_flux.i.Omega(D.val, u[-1], v)" +
-                     " - dw_dg_diffusion_flux.i.Omega(D.val, v, u[-1])" +
-                     " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, u[-1])" +
+                     " + dw_laplace.i.Omega(D.val, v, p[-1]) " +
+                     " - dw_dg_diffusion_flux.i.Omega(D.val, p[-1], v)" +
+                     " - dw_dg_diffusion_flux.i.Omega(D.val, v, p[-1])" +
+                     " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, p[-1])" +
 
-                     # " - dw_dg_diffusion_fluxHest1.i.Omega(D.val, v, u[-1]) " +
+                     # " - dw_dg_diffusion_fluxHest1.i.Omega(D.val, v, p[-1]) " +
 
                      " = 0"
     }
@@ -134,14 +134,14 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     @local_register_function
     def get_ic(x, ic=None):
         return nm.sin(x)
 
     ics = {
-        'ic': ('Omega', {'u.0': 'get_ic'}),
+        'ic': ('Omega', {'p.0': 'get_ic'}),
     }
 
     return locals()

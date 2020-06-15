@@ -60,8 +60,8 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u': ('unknown field', 'f', 0, 1),
-        'v': ('test field', 'f', 'u'),
+        'p': ('unknown field', 'f', 0, 1),
+        'v': ('test field', 'f', 'p'),
     }
 
     integrals = {
@@ -82,7 +82,7 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     @local_register_function
     def bc_fun(ts, coors, bc, problem):
@@ -113,21 +113,18 @@ def define(filename_mesh=None,
         eps = diffcoef
         return -tanh(1/4*(2*x + 1)/eps) + 1
 
-    def adv_fun(u):
-        vu = velo * u[..., None]
-        return vu
+    def adv_fun(p):
+        return velo * p[..., None]
 
-    def adv_fun_d(u):
-        v1 = velo * nm.ones(u.shape + (1,))
-        return v1
 
-    def burg_fun(u):
-        vu = 1/2 * u[..., None] ** 2
-        return vu
+    def adv_fun_d(p):
+        return velo * nm.ones(p.shape + (1,))
 
-    def burg_fun_d(u):
-        v1 = u[..., None]
-        return v1
+    def burg_fun(p):
+        return 1/2 * p[..., None] ** 2
+
+    def burg_fun_d(p):
+        return p[..., None]
 
 
     materials = {
@@ -136,25 +133,25 @@ def define(filename_mesh=None,
     }
 
     ics = {
-        'ic': ('Omega', {'u.0': 'get_ic'}),
+        'ic': ('Omega', {'p.0': 'get_ic'}),
     }
 
     dgebcs = {
-        'u_left' : ('left', {'u.all': 'bc_fun', 'grad.u.all': 0}),
-        'u_right' : ('right', {'u.all': 'bc_fun', 'grad.u.all': 0}),
+        'u_left' : ('left', {'p.all': 'bc_fun', 'grad.p.all': 0}),
+        'u_right' : ('right', {'p.all': 'bc_fun', 'grad.p.all': 0}),
 
     }
 
     equations = {
                      # temporal der
-        'balance':   "dw_volume_dot.i.Omega(v, u)" +
+        'balance':   "dw_volume_dot.i.Omega(v, p)" +
                      #  non-linear "advection"
-                     " - dw_ns_dot_grad_s.i.Omega(burg_fun, burg_fun_d, u[-1], v)" +
-                     " + dw_dg_nonlinear_laxfrie_flux.i.Omega(a.flux, burg_fun, burg_fun_d, v, u[-1])" +
+                     " - dw_ns_dot_grad_s.i.Omega(burg_fun, burg_fun_d, p[-1], v)" +
+                     " + dw_dg_nonlinear_laxfrie_flux.i.Omega(a.flux, burg_fun, burg_fun_d, v, p[-1])" +
                      #  diffusion
-                     " + dw_laplace.i.Omega(D.val, v, u[-1])" +
+                     " + dw_laplace.i.Omega(D.val, v, p[-1])" +
                      diffusion_schemes_explicit[diffscheme] +
-                     " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, u[-1])"
+                     " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, p[-1])"
                      " = 0"
     }
 

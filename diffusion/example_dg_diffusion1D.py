@@ -4,7 +4,7 @@ Simple example for second order ODE
 
     du^2/dx^2 = g
 
-    u(0) = u(1) = 0
+    p(0) = p(1) = 0
     du/dx(0) = du/dx(0) = 2*pi
 
 """
@@ -56,19 +56,19 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u' : ('unknown field', 'f', 0),
-        'v' : ('test field',    'f', 'u'),
+        'p' : ('unknown field', 'f', 0),
+        'v' : ('test field',    'f', 'p'),
     }
 
     dgebcs = {
-        'u_left': ('left', {'u.all': "bc_fun", 'grad.u.all': "bc_fun"}),
-        'u_right': ('right', {'u.all': "bc_fun", 'grad.u.all': "bc_fun"}),
+        'u_left': ('left', {'p.all': "bc_fun", 'grad.p.all': "bc_fun"}),
+        'u_right': ('right', {'p.all': "bc_fun", 'grad.p.all': "bc_fun"}),
     }
 
     # dgepbc_1 = {
     #     'name'  : 'u_rl',
     #     'region': ['right', 'left'],
-    #     'dofs': {'u.all': 'u.all'},
+    #     'dofs': {'p.all': 'p.all'},
     #     'match': 'match_y_line',
     # }
 
@@ -78,11 +78,11 @@ def define(filename_mesh=None,
 
     if transient:
         equations = {
-            'Advection': " dw_volume_dot.i.Omega(v, u) " +
+            'Advection': " dw_volume_dot.i.Omega(v, p) " +
 
-                         " + dw_laplace.i.Omega(D.val, v, u[-1]) " +
+                         " + dw_laplace.i.Omega(D.val, v, p[-1]) " +
                          diffusion_schemes_implicit[diffscheme] +
-                         " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, u[-1])" +
+                         " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, p[-1])" +
 
                          " - dw_volume_lvf.i.Omega(g.val, v)"
                          " = 0"
@@ -108,9 +108,9 @@ def define(filename_mesh=None,
         }
     else:
         equations = {
-            'Temperature': " + dw_laplace.i.Omega(D.val, v, u) " +
+            'Temperature': " + dw_laplace.i.Omega(D.val, v, p) " +
                            diffusion_schemes_implicit[diffscheme] +
-                           " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, u)" +
+                           " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, p)" +
                            " - dw_volume_lvf.i.Omega(g.val, v) = 0"
         }
         solvers = {
@@ -182,7 +182,7 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     return locals()
 

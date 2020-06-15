@@ -72,8 +72,8 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u': ('unknown field', 'f', 0, 1),
-        'v': ('test field', 'f', 'u'),
+        'p': ('unknown field', 'f', 0, 1),
+        'v': ('test field', 'f', 'p'),
     }
 
     integrals = {
@@ -93,7 +93,7 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     @local_register_function
     def bc_funs(ts, coors, bc, problem):
@@ -153,20 +153,20 @@ def define(filename_mesh=None,
             )
             return {"val": res[..., None, None]}
 
-    def adv_fun(u):
-        vu = velo.T * u[..., None]
+    def adv_fun(p):
+        vu = velo.T * p[..., None]
         return vu
 
-    def adv_fun_d(u):
-        v1 = velo.T * nm.ones(u.shape + (1,))
+    def adv_fun_d(p):
+        v1 = velo.T * nm.ones(p.shape + (1,))
         return v1
 
-    def burg_fun(u):
-        vu = .5*burg_velo * u[..., None] ** 2
+    def burg_fun(p):
+        vu = .5*burg_velo * p[..., None] ** 2
         return vu
 
-    def burg_fun_d(u):
-        v1 = burg_velo * u[..., None]
+    def burg_fun_d(p):
+        v1 = burg_velo * p[..., None]
         return v1
 
 
@@ -177,27 +177,27 @@ def define(filename_mesh=None,
     }
 
     ics = {
-        'ic': ('Omega', {'u.0': 0}),
+        'ic': ('Omega', {'p.0': 0}),
     }
 
     dgebcs = {
-        'u_left' : ('left', {'u.all': 'bc_funs', 'grad.u.all': 'bc_funs'}),
-        'u_right' : ('right', {'u.all': 'bc_funs', 'grad.u.all': 'bc_funs'}),
-        'u_bottom' : ('bottom', {'u.all': 'bc_funs', 'grad.u.all': 'bc_funs'}),
-        'u_top' : ('top', {'u.all': 'bc_funs', 'grad.u.all': 'bc_funs'}),
+        'u_left' : ('left', {'p.all': 'bc_funs', 'grad.p.all': 'bc_funs'}),
+        'u_right' : ('right', {'p.all': 'bc_funs', 'grad.p.all': 'bc_funs'}),
+        'u_bottom' : ('bottom', {'p.all': 'bc_funs', 'grad.p.all': 'bc_funs'}),
+        'u_top' : ('top', {'p.all': 'bc_funs', 'grad.p.all': 'bc_funs'}),
 
     }
 
     equations = {
       'balance':
-         "dw_volume_dot.i.Omega(v, u)" +
+         "dw_volume_dot.i.Omega(v, p)" +
          #  non-linear "advection"
-         " - dw_ns_dot_grad_s.i.Omega(burg_fun, burg_fun_d, u[-1], v)" +
-         " + dw_dg_nonlinear_laxfrie_flux.i.Omega(a.flux, burg_fun, burg_fun_d, v, u[-1])" +
+         " - dw_ns_dot_grad_s.i.Omega(burg_fun, burg_fun_d, p[-1], v)" +
+         " + dw_dg_nonlinear_laxfrie_flux.i.Omega(a.flux, burg_fun, burg_fun_d, v, p[-1])" +
          #  diffusion
-         " + dw_laplace.i.Omega(D.val, v, u[-1])" +
+         " + dw_laplace.i.Omega(D.val, v, p[-1])" +
          diffusion_schemes_explicit[diffscheme] +
-         " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, u[-1])"
+         " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, p[-1])"
          # source
          + " - dw_volume_lvf.i.Omega(g.val, v)"
          " = 0"

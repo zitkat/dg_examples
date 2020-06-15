@@ -115,13 +115,13 @@ def compute_erros(analytic_fun, pb):
     """
     idiff = Integral('idiff', 20)
     num_qp = pb.evaluate(
-        'ev_volume_integrate.idiff.Omega(u)',
+        'ev_volume_integrate.idiff.Omega(p)',
         integrals=Integrals([idiff]), mode='qp',
         copy_materials=False, verbose=False
     )
     aux = Material('aux', function=analytic_fun)
     ana_qp = pb.evaluate(
-        'ev_volume_integrate_mat.idiff.Omega(aux.u, u)',
+        'ev_volume_integrate_mat.idiff.Omega(aux.p, p)',
         aux=aux, integrals=Integrals([idiff]), mode='qp',
         copy_materials=False, verbose=False
     )

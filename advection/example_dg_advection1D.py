@@ -3,9 +3,9 @@ Simple example for first order PDE
 
     du/dt - a * du/dx = 0
 
-    u(t,0) = u(t,1)
+    p(t,0) = p(t,1)
 
-    u(0, x) = ghump
+    p(0, x) = ghump
 
 """
 from example_dg_common import *
@@ -59,19 +59,19 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u': ('unknown field', 'f', 0, 1),
-        'v': ('test field', 'f', 'u'),
+        'p': ('unknown field', 'f', 0, 1),
+        'v': ('test field', 'f', 'p'),
     }
 
     # dgebcs = {
-    #     'u_left': ('left', {'u.all': 0}),
-    #     'u_righ': ('right', {'u.all': 0}),
+    #     'u_left': ('left', {'p.all': 0}),
+    #     'u_righ': ('right', {'p.all': 0}),
     # }
 
     dgepbc_1 = {
         'name'  : 'u_rl',
         'region': ['right', 'left'],
-        'dofs': {'u.all': 'u.all'},
+        'dofs': {'p.all': 'p.all'},
         'match': 'match_y_line',
     }
 
@@ -81,9 +81,9 @@ def define(filename_mesh=None,
 
     equations = {
         'Advection': """
-                       dw_volume_dot.i.Omega(v, u)
-                       - dw_s_dot_mgrad_s.i.Omega(a.val, u[-1], v)
-                       + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, u[-1]) = 0
+                       dw_volume_dot.i.Omega(v, p)
+                       - dw_s_dot_mgrad_s.i.Omega(a.val, p[-1], v)
+                       + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, p[-1]) = 0
                       """
     }
 
@@ -139,10 +139,10 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     ics = {
-        'ic': ('Omega', {'u.0': 'get_ic'}),
+        'ic': ('Omega', {'p.0': 'get_ic'}),
     }
 
     return locals()

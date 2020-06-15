@@ -64,8 +64,8 @@ def define(filename_mesh=None,
 
 
     variables = {
-        'u': ('unknown field', 'f', 0),
-        'v': ('test field', 'f', 'u'),
+        'p': ('unknown field', 'f', 0),
+        'v': ('test field', 'f', 'p'),
     }
 
     integrals = {
@@ -161,13 +161,13 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     dgebcs = {
-        'u_left' : ('left', {'u.all': "bc_funs", 'grad.u.all' : "bc_funs"}),
-        'u_top'  : ('top', {'u.all': "bc_funs", 'grad.u.all' :  "bc_funs"}),
-        'u_bot'  : ('bottom', {'u.all': "bc_funs", 'grad.u.all' :  "bc_funs"}),
-        'u_right': ('right', {'u.all': "bc_funs", 'grad.u.all' :  "bc_funs"}),
+        'u_left' : ('left', {'p.all': "bc_funs", 'grad.p.all' : "bc_funs"}),
+        'u_top'  : ('top', {'p.all': "bc_funs", 'grad.p.all' :  "bc_funs"}),
+        'u_bot'  : ('bottom', {'p.all': "bc_funs", 'grad.p.all' :  "bc_funs"}),
+        'u_right': ('right', {'p.all': "bc_funs", 'grad.p.all' :  "bc_funs"}),
     }
 
     materials = {
@@ -178,13 +178,13 @@ def define(filename_mesh=None,
 
     equations = {
         'balance': """
-                    - dw_s_dot_mgrad_s.i.Omega(a.val, u, v)
-                    + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, u)
+                    - dw_s_dot_mgrad_s.i.Omega(a.val, p, v)
+                    + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, p)
                    """
                    +
-                   " + dw_laplace.i.Omega(D.val, v, u) " +
+                   " + dw_laplace.i.Omega(D.val, v, p) " +
                    diffusion_schemes_implicit[diffscheme] +
-                   " + dw_dg_interior_penalty.i.Omega(D.val, D.cw, v, u)" +
+                   " + dw_dg_interior_penalty.i.Omega(D.val, D.cw, v, p)" +
                    " - dw_volume_lvf.i.Omega(g.val, v) = 0"
 
     }

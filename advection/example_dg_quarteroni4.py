@@ -52,8 +52,8 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u': ('unknown field', 'density', 0),
-        'v': ('test field', 'density', 'u'),
+        'p': ('unknown field', 'density', 0),
+        'v': ('test field', 'density', 'p'),
     }
 
     integrals = {
@@ -61,11 +61,11 @@ def define(filename_mesh=None,
     }
 
     dgebcs = {
-        'u_bot_left' : ('bot_left', {'u.all': 1, 'grad.u.all' : (0, 0)}),
-        'u_top_left': ('top_left', {'u.all': 0, 'grad.u.all': (0, 0)}),
-        'u_top'  : ('top', {'u.all': 0, 'grad.u.all': (0, 0)}),
-        'u_bot'  : ('bottom', {'u.all': 1, 'grad.u.all': (0, 0)}),
-        'u_right': ('right', {'u.all': 0, 'grad.u.all': (0, 0)}),
+        'u_bot_left' : ('bot_left', {'p.all': 1, 'grad.p.all' : (0, 0)}),
+        'u_top_left': ('top_left', {'p.all': 0, 'grad.p.all': (0, 0)}),
+        'u_top'  : ('top', {'p.all': 0, 'grad.p.all': (0, 0)}),
+        'u_bot'  : ('bottom', {'p.all': 1, 'grad.p.all': (0, 0)}),
+        'u_right': ('right', {'p.all': 0, 'grad.p.all': (0, 0)}),
     }
 
     materials = {
@@ -76,13 +76,13 @@ def define(filename_mesh=None,
 
     equations = {
         'balance': """
-                    - dw_s_dot_mgrad_s.i.Omega(a.val, u, v)
-                    + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, u)
+                    - dw_s_dot_mgrad_s.i.Omega(a.val, p, v)
+                    + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, p)
                    """
                    +
-                   " + dw_laplace.i.Omega(D.val, v, u) " +
+                   " + dw_laplace.i.Omega(D.val, v, p) " +
                    diffusion_schemes_implicit[diffscheme] +
-                   " + dw_dg_interior_penalty.i.Omega(D.val, D.cw, v, u)" +
+                   " + dw_dg_interior_penalty.i.Omega(D.val, D.cw, v, p)" +
                    # " + dw_volume_lvf.i.Omega(g.val, v)
                    " = 0"
 

@@ -60,8 +60,8 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u': ('unknown field', 'f', 0),
-        'v': ('test field', 'f', 'u'),
+        'p': ('unknown field', 'f', 0),
+        'v': ('test field', 'f', 'p'),
     }
 
     @local_register_function
@@ -134,13 +134,13 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     dgebcs = {
-        'u_left' : ('left', {'u.all': "bc_fun", 'grad.u.all' : "bc_fun"}),
-        'u_top'  : ('top', {'u.all': "bc_fun", 'grad.u.all' :  "bc_fun"}),
-        'u_bot'  : ('bottom', {'u.all': "bc_fun", 'grad.u.all' :  "bc_fun"}),
-        'u_right': ('right', {'u.all': "bc_fun", 'grad.u.all' :  "bc_fun"}),
+        'u_left' : ('left', {'p.all': "bc_fun", 'grad.p.all' : "bc_fun"}),
+        'u_top'  : ('top', {'p.all': "bc_fun", 'grad.p.all' :  "bc_fun"}),
+        'u_bot'  : ('bottom', {'p.all': "bc_fun", 'grad.p.all' :  "bc_fun"}),
+        'u_right': ('right', {'p.all': "bc_fun", 'grad.p.all' :  "bc_fun"}),
     }
 
     integrals = {
@@ -148,9 +148,9 @@ def define(filename_mesh=None,
     }
 
     equations = {
-        'Temperature':  " + dw_laplace.i.Omega(D.val, v, u) " +
+        'Temperature':  " + dw_laplace.i.Omega(D.val, v, p) " +
                         diffusion_schemes_implicit[diffscheme] +
-                        " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, u)" +
+                        " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, p)" +
                         " - dw_volume_lvf.i.Omega(g.val, v) = 0"
     }
 

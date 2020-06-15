@@ -1,20 +1,22 @@
 """
 Problem specs for
 
-            div(grad u) = 0
+            div(grad p) = 0
 
 on rectangle
-                    u = 0
+                    p = 0
                     u_x = 0
     [0,b]┌---------------------------┐[a, b]
          |                           |
          |                           |
-u_x = -a |         u(x,y)            | u_x = 0
-u = 0    |                           | u = 0
+         |                           |
+p_x = -a |         p(x,y)            | p_x = 0
+p = 0    |                           | p = 0
+         |                           |
          |                           |
     [0,0]└---------------------------┘[a, 0]
                     u_y = b
-                    u = 0
+                    p = 0
 
 solution to this is 1/2*x**2 - 1/2*y**2 - a*x + b*y
 """
@@ -71,8 +73,8 @@ def define(filename_mesh=None,
     }
 
     variables = {
-        'u': ('unknown field', 'f', 0, 1),
-        'v': ('test field', 'f', 'u'),
+        'p': ('unknown field', 'f', 0, 1),
+        'v': ('test field', 'f', 'p'),
     }
 
     def analytic_sol(coors, t):
@@ -86,7 +88,7 @@ def define(filename_mesh=None,
     def sol_fun(ts, coors, mode="qp", **kwargs):
         t = ts.time
         if mode == "qp":
-            return {"u": analytic_sol(coors, t)[..., None, None]}
+            return {"p": analytic_sol(coors, t)[..., None, None]}
 
     @local_register_function
     def bc_funs(ts, coors, bc, problem):
@@ -112,10 +114,10 @@ def define(filename_mesh=None,
     }
 
     dgebcs = {
-        'u_left' : ('left', {'u.all': "bc_funs", 'grad.u.all': "bc_funs"}),
-        'u_right' : ('right', {'u.all': "bc_funs", 'grad.u.all': "bc_funs"}),
-        'u_bottom' : ('bottom', {'u.all': "bc_funs", 'grad.u.all': "bc_funs"}),
-        'u_top' : ('top', {'u.all': "bc_funs", 'grad.u.all': "bc_funs"}),
+        'u_left' : ('left', {'p.all': "bc_funs", 'grad.p.all': "bc_funs"}),
+        'u_right' : ('right', {'p.all': "bc_funs", 'grad.p.all': "bc_funs"}),
+        'u_bottom' : ('bottom', {'p.all': "bc_funs", 'grad.p.all': "bc_funs"}),
+        'u_top' : ('top', {'p.all': "bc_funs", 'grad.p.all': "bc_funs"}),
 
     }
 
@@ -124,9 +126,9 @@ def define(filename_mesh=None,
     }
 
     equations = {
-        'laplace': " dw_laplace.i.Omega(D.val, v, u) " +
+        'laplace': " dw_laplace.i.Omega(D.val, v, p) " +
                      diffusion_schemes_implicit[diffscheme] +
-                     " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, u)" +
+                     " + dw_dg_interior_penalty.i.Omega(D.val, D.Cw, v, p)" +
                      " = 0"
     }
 
