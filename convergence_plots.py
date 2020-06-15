@@ -157,37 +157,34 @@ def plot_parametrized_var(df, x_var, y_var,
     return fig
 
 
-def plot_agregated_var(df, var, x_var, colored_var, labels=None,
-                       xlogscale=True, ylogscale=True):
+def plot_agregated_var(df, y_var, x_var, color_var,
+                       xlogscale=True, ylogscale=True, **kwargs):
     fig, ax = plt.subplots()
     if xlogscale:
         ax.set_xscale('log', basex=10)
     if ylogscale:
         ax.set_yscale('log', basey=10)
 
-    if labels is not None:
-        x_lab = labels[0]
-        col_lab = labels[1]
-    else:
-        x_lab = x_var
-        col_lab = colored_var
+    y_lab = kwargs.pop("y_lab", y_var)
+    x_lab = kwargs.pop("x_lab", x_var)
+    cor_lab = kwargs.pop("color_lab", color_var)
 
     orders = sorted(df["order"].unique())
-    color_vals = df[colored_var].unique()
+    color_vals = df[color_var].unique()
     colors = plt.cm.viridis(nm.linspace(0, 1, len(color_vals)))
 
     oline = []
     for di, col_val in enumerate(color_vals):
-        order_means = df[(df[colored_var] == col_val)]. \
-                        groupby(["expid", "order"])[[x_var, colored_var, var]]\
-            .mean().reset_index("expid")
+        order_means = df[(df[color_var] == col_val)]. \
+                        groupby(["expid", "order"])[[x_var, color_var, y_var]]\
+                        .mean().reset_index("expid")
 
         for i in orders:
-            ax.plot(order_means.loc[i][x_var], order_means.loc[i][var],
-                             order_symbols[i], color=colors[di], label="")
+            ax.plot(order_means.loc[i][x_var], order_means.loc[i][y_var],
+                    order_symbols[i], color=colors[di], label="")
 
-            ax.plot(order_means.loc[i][x_var], order_means.loc[i][var],
-                    color=colors[di], label=col_lab)
+            ax.plot(order_means.loc[i][x_var], order_means.loc[i][y_var],
+                    color=colors[di], label=cor_lab)
         oline += [Line2D([0], [0], color=colors[di])]
 
     omarks = [Line2D([0], [0], marker=order_symbols[o], color="grey")
@@ -195,19 +192,19 @@ def plot_agregated_var(df, var, x_var, colored_var, labels=None,
     lb = Legend(ax, omarks, labels=orders, title="Order")
     ax.add_artist(lb)
 
-    lb = Legend(ax, oline, labels=color_vals, title=col_lab, borderaxespad=-8.5,
+    lb = Legend(ax, oline, labels=color_vals, title=cor_lab, borderaxespad=-8.5,
                 loc="lower center",
                 ncol=len(oline) // 2 if len(oline) > 4 else len(oline))
     ax.add_artist(lb)
 
-    ax.set_ylabel("Numerical order")
+    ax.set_ylabel(y_lab)
     ax.set_xlabel(x_lab)
 
     return fig
 
 
 if __name__ == '__main__':
-    folder = Path(r"outputs/parametric/example_dg_laplace2D/")
+    folder = Path(r"outputs/parametric/example_dg_burgess2D_kucera/")
     df = pd.DataFrame()
     for file in folder.glob("*.csv"):
         df = df.append(
@@ -236,7 +233,7 @@ if __name__ == '__main__':
     f = plot_parametrized_var(df,
                        y_var="diff_l2", y_lab="$L^2$ relative error",
                        x_var="h-2", x_lab="$1/h^2$",
-                       row_var="diffcoef", row_lab="Diffusion $\\varepsilon$",
+                       row_var="diffcoef", row_lab="Diffusion $D$",
                        column_var="gel", column_lab="Geometry",
                        color_var="cw", color_lab="Penalty coefficient $C_w$",
                        alpha=.5
@@ -244,9 +241,11 @@ if __name__ == '__main__':
 
     f.savefig("conv_plot.pdf")
 
-    fe = plot_agregated_var(df[(df["gel"] == "2_3")], var="nls_error",
-                          x_var="diffcoef", colored_var="cw",
-                          labels=("Diffusion coefficient $D$", "Penalty $C_w$"))
+    fe = plot_agregated_var(df[(df["gel"] == "2_3")],
+                            y_var="num_order", y_lab="Order", ylogscale=False,
+                            x_var="diffcoef", x_lab="Diffusion coefficient $D$",
+                            color_var="cw",
+                            color_lab="Penalty coefficient $C_w$")
     fe.savefig("nls_err_plot.pdf")
 
     # plot_agregated_var(df[(df["gel"] == "2_3")], var="num_order",
@@ -258,4 +257,4 @@ if __name__ == '__main__':
     #                       colored_var="diffcoef",
     #                       labels=("Penalty $C_w$", "Diffusion coefficient $D$"),
     #                       ylogscale=False)
-    # plt.show()
+    plt.show()
