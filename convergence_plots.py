@@ -12,6 +12,10 @@ from matplotlib.lines import Line2D
 order_symbols = dict(zip(nm.arange(0, 6, dtype=float),
                          ["o", "d", "v", "^", "s", "p"]))
 
+gel_names = {"1_2": "",
+             "2_3": "Triangles",
+             "2_4": "Quadrilaterals"}
+
 
 def calculate_num_order(err_df):
     """
@@ -47,7 +51,8 @@ def calculate_num_order(err_df):
     return res_df
 
 
-def plot_marked_var(df, x_var, y_var, fig=None, ax=None, **kwargs):
+def plot_marked_var(df, mk_var, x_var, y_var, mark_symbols=order_symbols,
+                    fig=None, ax=None, **kwargs):
     if fig is None or ax is None:
         fig, ax = plt.subplots(1, 1)
 
@@ -61,17 +66,17 @@ def plot_marked_var(df, x_var, y_var, fig=None, ax=None, **kwargs):
 
     label_ext = str(kwargs.pop("label", ""))
 
-    orders = sorted(df["order"].unique())
-    for o in orders:
-        curr_df = df[df["order"] == o]
+    mark_vals = sorted(df[mk_var].unique())
+    for mk in mark_vals:
+        curr_df = df[df[mk_var] == mk]
         if color is not None:
             l, = ax.plot(curr_df[x_var], curr_df[y_var],
-                         order_symbols[o], label=str(int(o)) + label_ext,
+                         mark_symbols[mk], label=str(int(mk)) + label_ext,
                          color=color,
                          **kwargs)
         else:
             l, = ax.plot(curr_df[x_var], curr_df[y_var],
-                         order_symbols[o], label=str(int(o)) + label_ext,
+                         mark_symbols[mk], label=str(int(mk)) + label_ext,
                          **kwargs)
 
         ax.plot(curr_df[x_var], curr_df[y_var], label="",
@@ -81,37 +86,48 @@ def plot_marked_var(df, x_var, y_var, fig=None, ax=None, **kwargs):
         # for i, r in curr_df.loc[~curr_df["num_order"].isnull(), :].iterrows():
         #     ax.text(r[x_var], r["diff_l2"], "{:.2f}".format(r["num_order"]))
 
-    omarks = [Line2D([0], [0], marker=order_symbols[o], color="grey")
-              for o in orders]
+    omarks = [Line2D([0], [0], marker=mark_symbols[o], color="grey")
+              for o in mark_vals]
     return omarks
 
 
-def plot_parametrized_var(df, x_var, y_var,
-                           column_var, row_var,
-                           color_var,
-                           **kwargs):
+def plot_parametrized_var(df,
+                          x_var, y_var,
+                          column_var,
+                          row_var,
+                          color_var,
+                          mk_var="order",
+                          mk_lab="Order",
+                          **kwargs):
     columns = df[column_var].unique()
     rows = df[row_var].unique()
     color_vals = df[color_var].unique()
-    colors = plt.cm.viridis(nm.linspace(0, 1, len(color_vals)))[::-1]
+    cm = kwargs.pop("color_map", plt.cm.viridis)
+    colors = cm(nm.linspace(0, 1, len(color_vals)))[::-1]
 
     ncol = len(columns)
     nrow = len(rows)
 
     y_lab = kwargs.pop("y_lab", y_var)
     x_lab = kwargs.pop("x_lab", x_var)
-    col_lab = kwargs.pop("column_lab", column_var)
+    clm_lab = kwargs.pop("column_lab", column_var)
     row_lab = kwargs.pop("row_lab", row_var)
     cor_lab = kwargs.pop("color_lab", color_var)
+    mk_lab = kwargs.pop("mk_lab", mk_var)
 
     figsize = kwargs.pop("figsize", (ncol * 4, nrow * 4))
     fig, axs = plt.subplots(nrows=len(rows), ncols=len(columns),
                             figsize=figsize)
     fig.subplots_adjust(hspace=.2, wspace=.2)
-    # legax = fig.add_axes([0.5, 0.1 - 0.5 / (nrow * 4), 0.01, 0.01])
-    legax = fig.add_axes([0.5, .05, 0.01, 0.01])
 
-    legax.set_axis_off()
+    lines_ax_rect = kwargs.pop("lines_leg_rect", [0, .07, 0.01, 0.01])
+    lines_ax = fig.add_axes(lines_ax_rect)
+    lines_ax.set_axis_off()
+    lines_n_col = kwargs.pop("lines_ncol", 3)
+
+    marks_ax_rect = kwargs.pop("marks_leg_rect", [0.55, .07, 0.01, 0.01])
+    marks_ax = fig.add_axes(marks_ax_rect)
+    marks_ax.set_axis_off()
 
     if nrow == 1 and ncol == 1:
         axs = [[axs]]
@@ -121,18 +137,19 @@ def plot_parametrized_var(df, x_var, y_var,
         axs = [[ax] for ax in axs]
 
     for ii, row_val in enumerate(rows):
-        for jj, col_val in enumerate(columns):
+        for jj, clm_val in enumerate(columns):
             ax = axs[ii][jj]
             if jj == 0:
                 ax.set_ylabel(y_lab)
             olines = []
             for cc, color_val in enumerate(color_vals):
                 ax.set_title("{}: {}, {}: {}".format(row_lab, row_val,
-                                                     col_lab, col_val))
+                                                     clm_lab, clm_val))
                 omarks = plot_marked_var(
-                    df[(df[column_var] == col_val) &
+                    df[(df[column_var] == clm_val) &
                        (df[row_var] == row_val) &
                        (df[color_var] == color_val)],
+                    mk_var=mk_var,
                     x_var=x_var, y_var=y_var, fig=fig, ax=ax,
                     color=colors[cc], label=" {}".format(color_val), **kwargs)
                 olines += [Line2D([0], [0], color=colors[cc])]
@@ -146,20 +163,22 @@ def plot_parametrized_var(df, x_var, y_var,
             if ii == len(rows) - 1:
                 ax.set_xlabel(x_lab)
 
-    fig.legend(handles=omarks,
-               labels=sorted(df["order"].unique()),
-               title="Order", loc='center right')
+    marks_ax.legend(handles=omarks,
+                    labels=sorted(df[mk_var].unique()),
+                    title=mk_lab, ncol=len(omarks),
+                    borderaxespad=0., loc="upper center")
 
-    legax.legend(handles=olines,
-                 labels=["{}".format(cval) for cval in color_vals],
-                 title=cor_lab, ncol=2*ncol,
-                 borderaxespad=0., loc="upper center")
+    lines_ax.legend(handles=olines,
+                    labels=["{}".format(cval) for cval in color_vals],
+                    title=cor_lab, ncol=lines_n_col,
+                    borderaxespad=0., loc="upper center")
     return fig
 
 
 def plot_agregated_var(df, y_var, x_var, color_var,
                        xlogscale=True, ylogscale=True, **kwargs):
-    fig, ax = plt.subplots()
+    figsize = kwargs.pop("figsize", (8, 6))
+    fig, ax = plt.subplots(figsize=figsize)
     if xlogscale:
         ax.set_xscale('log', basex=10)
     if ylogscale:
@@ -171,13 +190,14 @@ def plot_agregated_var(df, y_var, x_var, color_var,
 
     orders = sorted(df["order"].unique())
     color_vals = df[color_var].unique()
-    colors = plt.cm.viridis(nm.linspace(0, 1, len(color_vals)))
+    cm = kwargs.pop("color_map", plt.cm.viridis)
+    colors = cm(nm.linspace(0, 1, len(color_vals)))[::-1]
 
     oline = []
     for di, col_val in enumerate(color_vals):
         order_means = df[(df[color_var] == col_val)]. \
-                        groupby(["expid", "order"])[[x_var, color_var, y_var]]\
-                        .mean().reset_index("expid")
+            groupby(["expid", "order"])[[x_var, color_var, y_var]] \
+            .mean().reset_index("expid")
 
         for i in orders:
             ax.plot(order_means.loc[i][x_var], order_means.loc[i][y_var],
@@ -192,19 +212,23 @@ def plot_agregated_var(df, y_var, x_var, color_var,
     lb = Legend(ax, omarks, labels=orders, title="Order")
     ax.add_artist(lb)
 
-    lb = Legend(ax, oline, labels=color_vals, title=cor_lab, borderaxespad=-8.5,
+    lb = Legend(ax, oline,
+                labels=color_vals,
+                title=cor_lab, borderaxespad=-figsize[0] - 1,
                 loc="lower center",
                 ncol=len(oline) // 2 if len(oline) > 4 else len(oline))
     ax.add_artist(lb)
 
     ax.set_ylabel(y_lab)
     ax.set_xlabel(x_lab)
+    ax_title = kwargs.pop("ax_title", None)
+    ax.set_title(ax_title)
 
     return fig
 
 
 if __name__ == '__main__':
-    folder = Path(r"outputs/parametric/example_dg_burgess2D_kucera/")
+    folder = Path(r"outputs/parametric/example_dg_burgess1D_hesthaven/")
     df = pd.DataFrame()
     for file in folder.glob("*.csv"):
         df = df.append(
@@ -221,7 +245,7 @@ if __name__ == '__main__':
     print("cw:")
     print(df["cw"].unique())
 
-    df["h-2"] = 1/df["h"]**2
+    df["h-2"] = 1 / df["h"] ** 2
 
     # plot_errors_parametric(df,
     #                        y_var="diff_l2",
@@ -230,18 +254,19 @@ if __name__ == '__main__':
     #                        color_var="cw",
     #                        )
 
-    f = plot_parametrized_var(df,
-                       y_var="diff_l2", y_lab="$L^2$ relative error",
-                       x_var="h-2", x_lab="$1/h^2$",
-                       row_var="diffcoef", row_lab="Diffusion $D$",
-                       column_var="gel", column_lab="Geometry",
-                       color_var="cw", color_lab="Penalty coefficient $C_w$",
-                       alpha=.5
-                       )
+    f = plot_parametrized_var(df[(df["limit"] == False)],
+                              y_var="diff_l2", y_lab="$L^2$ relative error",
+                              x_var="h-2", x_lab="$1/h^2$",
+                              row_var="diffcoef", row_lab="Diffusion $D$",
+                              column_var="limit", column_lab="Limiting",
+                              color_var="cw",
+                              color_lab="Penalty coefficient $C_w$",
+                              alpha=.5
+                              )
 
     f.savefig("conv_plot.pdf")
 
-    fe = plot_agregated_var(df[(df["gel"] == "2_3")],
+    fe = plot_agregated_var(df[(df["limit"] == False)],
                             y_var="num_order", y_lab="Order", ylogscale=False,
                             x_var="diffcoef", x_lab="Diffusion coefficient $D$",
                             color_var="cw",
