@@ -123,8 +123,8 @@ def define(filename_mesh=None,
 
     @local_register_function
     def get_ic(x, ic=None):
-        return four_step_u(x)
-        # return ghump(x - .3)
+        # return four_step_u(x)
+        return ghump(x - .3)
 
     def analytic_sol(coors, t=None, uset=False):
         x = coors[..., 0]
