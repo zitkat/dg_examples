@@ -18,10 +18,10 @@ from sfepy.base.base import (get_default, output, assert_,
                              Struct, basestr, IndexedStruct)
 
 from script.dg_plot_1D import load_and_plot_fun
-from run_dg_utils import clear_folder, add_dg_arguments
+from run_dg_utils import clear_folder, add_dg_arguments, param_names
 
-from run_dg_utils import outputs_folder, \
-    plot_conv_results, build_attrs_string, output, compute_erros, configure_output
+from run_dg_utils import outputs_folder, output, configure_output
+
 
 def create_argument_parser():
     parser = argparse.ArgumentParser(
@@ -54,7 +54,7 @@ def create_argument_parser():
                         default=False, action='store_true',
                         dest='no_output_screen', )
 
-    parser.add_argument('--order', metavar="int" , default=1,
+    parser.add_argument('--order', metavar="int", default=None,
                         help='Approximation order', type=int)
 
     add_dg_arguments(parser)
@@ -72,23 +72,16 @@ def get_parametrized_conf(filename, args):
 
     problem_module = importlib.import_module(problem_module_name)
 
+    dg_args = {dg_par_name: args.__dict__[dg_par_name]
+               for dg_par_name in param_names + ["mesh_file", "order"]
+               if args.__dict__[dg_par_name] is not None}
+
     if hasattr(problem_module, "define"):
         mod = sys.modules[problem_module_name]
         # noinspection PyCallingNonCallable
         problem_conf = ProblemConf.from_dict(
             problem_module.define(
-                filename_mesh=args.mesh_file,
-                approx_order=args.order,
-
-                adflux=args.adflux,
-                limit=args.limit,
-
-                cw=args.cw,
-                diffcoef=args.diffcoef,
-                diffscheme=args.diffscheme,
-
-                cfl=args.cfl,
-                dt=args.dt,
+                **dg_args
             ), mod, verbose=args.verbose)
         if args.mesh_file is not None:
             problem_conf.options.absolute_mesh_path = True

@@ -94,10 +94,12 @@ def get_run_info():
     """ Run info for soops """
     run_cmd = """
     python run_dg_conv_study.py {problem_file}
-    --mesh={mesh} --output {output_dir}"""
+     --output {output_dir}"""
     run_cmd = ' '.join(run_cmd.split())
 
     opt_args = {
+        "mesh" : "--mesh={mesh}",
+
         # advection parameters
         "--advelo": " --advelo={--advelo}",
         "--adflux": " --adflux={--adflux}",
@@ -141,9 +143,11 @@ def main(argv):
 
     problem_module = importlib.import_module(problem_module_name)
 
-    mesh = str(Path(args.mesh_file))
+    mesh = None
+    if args.mesh_file is not None:
+        mesh = str(Path(args.mesh_file))
 
-    refines = parse_str2tuple_default(args.refines, (1, 2, 3, 4))
+    refines = parse_str2tuple_default(args.refines, (1, 2, 3, 4, 5))
     orders = parse_str2tuple_default(args.orders, (0, 1, 2, 3, 4))
 
     if problem_module.dim == 1:
@@ -152,7 +156,10 @@ def main(argv):
     mod = sys.modules[problem_module_name]
     results = []
     for ir, refine in enumerate(refines):
-        gen_mesh = refine_mesh(mesh, refine)
+        if mesh is not None:
+            gen_mesh = refine_mesh(mesh, refine)
+        else:
+            gen_mesh = refine
         for io, order in enumerate(orders):
             conf = ProblemConf.from_dict(
                 problem_module.define(
@@ -323,7 +330,7 @@ def plot_1D_snr(conf, pb, ana_qp, num_qp, io, order, orders, ir, sol_fig, axs):
 
     :param conf:
     :param io: index of order
-    :param ir: inder of refirement
+    :param ir: index of refirement
     :param ana_qp:
     :param num_qp:
     :param order:

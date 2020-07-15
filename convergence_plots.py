@@ -1,3 +1,7 @@
+"""
+Functions for plotting parametrized and aggregated results of convergence
+studies run using soops
+"""
 import pandas as pd
 from pathlib import Path
 from glob import glob
@@ -51,8 +55,10 @@ def calculate_num_order(err_df):
     return res_df
 
 
-def plot_marked_var(df, mk_var, x_var, y_var, mark_symbols=order_symbols,
+def plot_marked_var(df, mk_var, x_var, y_var, mark_symbols=None,
                     fig=None, ax=None, **kwargs):
+    if mark_symbols is None:
+        mark_symbols = order_symbols
     if fig is None or ax is None:
         fig, ax = plt.subplots(1, 1)
 
@@ -97,7 +103,6 @@ def plot_parametrized_var(df,
                           row_var,
                           color_var,
                           mk_var="order",
-                          mk_lab="Order",
                           **kwargs):
     columns = df[column_var].unique()
     rows = df[row_var].unique()
@@ -247,13 +252,6 @@ if __name__ == '__main__':
 
     df["h-2"] = 1 / df["h"] ** 2
 
-    # plot_errors_parametric(df,
-    #                        y_var="diff_l2",
-    #                        x_var="mean_vol",
-    #                        column_var="diffcoef", row_var="gel",
-    #                        color_var="cw",
-    #                        )
-
     f = plot_parametrized_var(df[(df["limit"] == False)],
                               y_var="diff_l2", y_lab="$L^2$ relative error",
                               x_var="h-2", x_lab="$1/h^2$",
@@ -272,14 +270,4 @@ if __name__ == '__main__':
                             color_var="cw",
                             color_lab="Penalty coefficient $C_w$")
     fe.savefig("nls_err_plot.pdf")
-
-    # plot_agregated_var(df[(df["gel"] == "2_3")], var="num_order",
-    #                       x_var="diffcoef", colored_var="cw",
-    #                       labels=("Diffusion coefficient $D$", "Penalty $C_w$"),
-    #                       ylogscale=False)
-    #
-    # plot_agregated_var(df[(df["gel"] == "2_3")], var="num_order", x_var="cw",
-    #                       colored_var="diffcoef",
-    #                       labels=("Penalty $C_w$", "Diffusion coefficient $D$"),
-    #                       ylogscale=False)
     plt.show()

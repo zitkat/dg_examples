@@ -3,6 +3,7 @@ from example_dg_common import *
 mesh_center = (0.5, 0.25)
 mesh_size = (1.0, 0.5)
 
+
 def define(filename_mesh=None,
            approx_order=2,
 
@@ -47,7 +48,8 @@ def define(filename_mesh=None,
     }
 
     fields = {
-        'f': ('real', 'scalar', 'Omega', str(approx_order) + 'd', 'DG', 'legendre')  #
+        'f': ('real', 'scalar', 'Omega',
+              str(approx_order) + 'd', 'DG', 'legendre')  #
     }
 
     variables = {
@@ -96,9 +98,10 @@ def define(filename_mesh=None,
 
     equations = {
         'Advection': """
-                       dw_volume_dot.i.Omega(v, p)
-                       - dw_s_dot_mgrad_s.i.Omega(a.val, p[-1], v)
-                       + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, p[-1]) = 0
+                   dw_volume_dot.i.Omega(v, p)
+                   - dw_s_dot_mgrad_s.i.Omega(a.val, p[-1], v)
+                   + dw_dg_advect_laxfrie_flux.i.Omega(a.flux, a.val, v, p[-1]) 
+                   = 0
                       """
     }
 
@@ -120,7 +123,9 @@ def define(filename_mesh=None,
         'active_only'     : False,
         'output_format'   : 'msh',
         'file_format'     : 'gmsh-dg',
-        'pre_process_hook': get_cfl_setup(cfl) if dt is None else get_cfl_setup(dt=dt)
+        'pre_process_hook': get_cfl_setup(cfl)
+                            if dt is None else
+                            get_cfl_setup(dt=dt)
     }
 
     return locals()

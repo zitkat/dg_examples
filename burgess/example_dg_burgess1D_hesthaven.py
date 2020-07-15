@@ -6,13 +6,13 @@ Brown University, Jan.Hesthaven@Brown.edu
 
 
 """
-
 from example_dg_common import *
+
 
 def define(filename_mesh=None,
            approx_order=2,
 
-          adflux=0,
+           adflux=0,
            limit=False,
 
            cw=1,

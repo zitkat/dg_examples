@@ -29,7 +29,7 @@ def define(filename_mesh=None,
            diffscheme="symmetric",
 
            cfl=None,
-           dt=1.,
+           dt=.001,
            ):
     """
     NOTE in this example filename_mesh may instead contain int denoting number
@@ -60,11 +60,14 @@ def define(filename_mesh=None,
         pass
 
 
-    if filename_mesh is None or nnodes is not None:
+    if nnodes is not None:
         filename_mesh = get_gen_block_mesh_hook((2., 2.), (nnodes, nnodes), (.0, .0))
+    elif filename_mesh is None:
+        filename_mesh = get_gen_block_mesh_hook((2., 2.), (80, 80), (.0, .0))
+
 
     t0 = 0.
-    t1 = 1.
+    t1 = .01
 
     angle = 0
     rotm = nm.array([[nm.cos(angle), -nm.sin(angle)],

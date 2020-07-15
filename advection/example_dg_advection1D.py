@@ -27,7 +27,7 @@ def define(filename_mesh=None,
            ):
 
     t0 = 0
-    t1 = 1
+    t1 = 0.1
     transient = True
 
     mstart = 0

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Script for plotting 1D DG FEM data stored in VTK files
+Script for plotting 1D DG FEM data stored in VTK files, uses values at QPs for
+close approximation.
 """
 import glob
 
@@ -140,8 +141,10 @@ def main(argv):
     input_name = args.input_name
 
     results_infolder_path = os.path.abspath(input_name)
-    full_infolder_path = pjoin(results_infolder_path, f"h{args.refine}", f"o{args.order}")
-    results_df = pd.read_csv(head(glob(pjoin(results_infolder_path, "results.csv"))))
+    full_infolder_path = pjoin(results_infolder_path,
+                               f"h{args.refine}", f"o{args.order}")
+    results_df = pd.read_csv(head(glob(pjoin(results_infolder_path,
+                                             "results.csv"))))
     diffcoef = results_df["diffcoef"].unique()[0]
 
     contents = glob(pjoin(full_infolder_path, "*.vtk"))

@@ -1,11 +1,5 @@
 """
-Simple example for first order PDE
 
-    du/dt - a * du/dx = 0
-
-    p(t,0) = p(t,1)
-
-    p(0, x) = ghump
 
 """
 from example_dg_common import *
@@ -27,7 +21,7 @@ def define(filename_mesh=None,
            ):
 
     t0 = 0
-    t1 = 2
+    t1 = 0.2
     transient = True
 
     mstart = -1
@@ -63,10 +57,6 @@ def define(filename_mesh=None,
         'v': ('test field', 'f', 'p'),
     }
 
-    # dgebcs = {
-    #     'u_left': ('left', {'p.all': 0}),
-    #     'u_righ': ('right', {'p.all': 0}),
-    # }
 
     dgepbc_1 = {
         'name'  : 'u_rl',

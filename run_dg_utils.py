@@ -4,7 +4,6 @@ Script with utility functions for running DG examples and convergence studies
 from glob import glob
 import os
 
-
 from matplotlib import pyplot as plt
 import numpy as nm
 
@@ -23,44 +22,51 @@ param_names = ["adflux", "limit", "cw", "diffcoef", "diffscheme", "cfl", "dt"]
 
 
 def add_dg_arguments(parser):
+    """
+    Adds arguments for parametrizing DG example:
+     advelo, adflux, limit, cw, diffcoef, diffscheme,
+     cfl, dt
+    """
     parser.add_argument('--advelo', metavar='float', type=float,
                         action='store', dest='advelo',
-                        default=1, help="Advection velocity")
+                        default=None, help="Advection velocity")
 
     parser.add_argument('--adflux', metavar='float', type=float,
                         action='store', dest='adflux',
-                        default=0, help="Advection flux parameter, " +
-                                        "\n0 - upwind, " +
-                                        "\n1 - central")
+                        default=None, help="Advection flux parameter, " +
+                                        "\n0.0 - upwind, " +
+                                        "\n1.0 - central")
 
     parser.add_argument("--limit", help="Use 1D or 2D moment limiter",
-                        default=False, action='store_true', dest='limit', )
+                        default=None, action='store_true', dest='limit', )
 
     parser.add_argument('--cw', metavar='float', type=float,
                         action='store', dest='cw',
-                        default=1, help="Diffusion penalty coefficient")
+                        default=None, help="Diffusion penalty coefficient")
 
     parser.add_argument('--diffcoef', metavar='float', type=float,
                         action='store', dest='diffcoef',
-                        default=1, help="Diffusion coeffcient")
+                        default=None, help="Diffusion coeffcient")
 
     parser.add_argument('--diffscheme', type=str,
                         choices=diffusion_schemes_explicit.keys(),
                         action='store', dest='diffscheme',
-                        default="symmetric", help="Scheme to use for diffusion")
+                        default=None, help="Scheme to use for diffusion")
 
     parser.add_argument('--cfl', metavar='float', type=float,
                         action='store', dest='cfl',
-                        default=0.314, help="CFL coefficient")
+                        default=None, help="CFL coefficient")
 
     parser.add_argument('--dt', metavar='float', type=float,
                         action='store', dest='dt',
                         default=None,
                         help="Time step size, overrides CFL coefficient")
 
+
 def plot_conv_results(base_output_folder, conf, err_df,
                       plot_title_attrs=None, save=False):
     """
+    Plots errors along with convergence rate estimates.
 
     :param base_output_folder:
     :param conf: conf structure defined in declarative mode, or object
@@ -101,17 +107,18 @@ def plot_conv_results(base_output_folder, conf, err_df,
 
     return conv_fig
 
+
 def compute_erros(analytic_fun, pb):
     """
     Compute errors from analytical solution in conf.sol_fun and numerical
     solution saved in pb
     :param analytic_fun: analytic solution
-    :param pb: problem to with numerical solution
+    :param pb: problem with numerical solution
     :return: analytic_fun L2 norm,
-              vaules of analytic_fun in qps
-              L2 norm of difference between analytic and numerical solution
-              relative difference
-              values of numerical solution in qps
+             vaules of analytic_fun in qps
+             L2 norm of difference between analytic and numerical solution
+             relative difference
+             values of numerical solution in qps
     """
     idiff = Integral('idiff', 20)
     num_qp = pb.evaluate(
@@ -130,6 +137,14 @@ def compute_erros(analytic_fun, pb):
     diff_l2 = nm.sqrt((((num_qp - ana_qp) ** 2) * det).sum())
     ana_l2 = nm.sqrt(((ana_qp ** 2) * det).sum())
     rel_l2 = diff_l2 / ana_l2
+
+    diff_loo = nm.max(num_qp - ana_qp)
+    ana_loo = nm.max(ana_qp)
+    rel_loo = diff_loo / ana_loo
+
+    diff_l1 = nm.sqrt((nm.abs(num_qp - ana_qp) * det).sum())
+    ana_l1 = nm.sqrt((nm.abs(ana_qp) * det).sum())
+    rel_l1 = diff_l2 / ana_l2
     return ana_l2, ana_qp, diff_l2, rel_l2, num_qp
 
 
