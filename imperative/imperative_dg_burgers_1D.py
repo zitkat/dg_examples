@@ -39,7 +39,7 @@ approx_order = 1
 outputs_folder = "../outputs"
 
 domain_name = "domain_1D"
-problem_name = "iburgess_1D"
+problem_name = "iburgers_1D"
 output_folder = pjoin(outputs_folder, problem_name, str(approx_order))
 output_format = "vtk"
 mesh_output_folder = "output/mesh"
@@ -114,7 +114,7 @@ def burg_fun_d(u):
 a = Material('a', val=[velo])
 # nonlin = Material('nonlin', values={'.fun' : adv_fun, '.dfun' : adv_fun_d})
 nonlin = Material('nonlin', values={'.fun': burg_fun, '.dfun': burg_fun_d})
-StiffT = NonlinearScalarDotGradTerm("burgess_stiff(f, df, u, v)",
+StiffT = NonlinearScalarDotGradTerm("burgers_stiff(f, df, u, v)",
                                     "fun , fun_d, u[-1], v",
                                     integral, omega,
                                     u=u, v=v,
@@ -124,7 +124,7 @@ alpha = Material('alpha', val=[.0])
 # FluxT = AdvectDGFluxTerm("adv_lf_flux(a.val, v, u)", "a.val, v,  u[-1]",
 #                          integral, omega, u=u, v=v, a=a, alpha=alpha)
 
-FluxT = NonlinearHyperbolicDGFluxTerm("burgess_lf_flux(f, df, u, v)",
+FluxT = NonlinearHyperbolicDGFluxTerm("burgers_lf_flux(f, df, u, v)",
                                       "fun , fun_d, v, u[-1]",
                                       integral, omega,
                                       u=u, v=v,

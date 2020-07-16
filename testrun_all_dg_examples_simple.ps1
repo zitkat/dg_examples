@@ -20,6 +20,6 @@ python -m simple .\advection\example_dg_quarteroni2.py -o .\outputs\output\quart
 python -m simple .\advection\example_dg_quarteroni3.py -o .\outputs\output\quarteroni3\sol
 python -m simple .\advection\example_dg_quarteroni4.py -o .\outputs\output\quarteroni4\sol
 
-# BURGESS PARAMETRIZED
-python -m simple .\burgess\example_dg_burgess1D_hesthaven.py -o .\outputs\output\burgess1D_hesthaven\sol
-python -m simple .\burgess\example_dg_burgess2D_kucera.py    -o .\outputs\output\burgess2D_kucera\sol
+# BURGERS PARAMETRIZED
+python -m simple .\burgers\example_dg_burgers1D_hesthaven.py -o .\outputs\output\burgers1D_hesthaven\sol
+python -m simple .\burgers\example_dg_burgers2D_kucera.py    -o .\outputs\output\burgers2D_kucera\sol

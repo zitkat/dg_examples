@@ -234,7 +234,7 @@ def plot_agregated_var(df, y_var, x_var, color_var,
 
 
 if __name__ == '__main__':
-    folder = Path(r"outputs/parametric/example_dg_burgess1D_hesthaven/")
+    folder = Path(r"outputs/parametric/example_dg_burgers1D_hesthaven/")
     df = pd.DataFrame()
     for file in folder.glob("*.csv"):
         df = df.append(

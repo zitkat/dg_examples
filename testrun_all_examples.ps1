@@ -20,6 +20,6 @@ python .\run_dg_example.py .\advection\example_dg_quarteroni2.py
 python .\run_dg_example.py .\advection\example_dg_quarteroni3.py
 python .\run_dg_example.py .\advection\example_dg_quarteroni4.py
 
-# BURGESS PARAMETRIZED
-python .\run_dg_example.py .\burgess\example_dg_burgess1D_hesthaven.py -dp
-python .\run_dg_example.py .\burgess\example_dg_burgess2D_kucera.py
+# BURGERS PARAMETRIZED
+python .\run_dg_example.py .\burgers\example_dg_burgers1D_hesthaven.py -dp
+python .\run_dg_example.py .\burgers\example_dg_burgers2D_kucera.py

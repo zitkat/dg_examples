@@ -27,11 +27,11 @@ soops-run -o .\$od\example_dg_quarteroni1 "problem_file='advection/example_dg_qu
 soops-run -o .\$od\example_dg_quarteroni2 "problem_file='advection/example_dg_quarteroni2', --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-5, 1e-4, 1e-3, 1e-2], mesh=[$mt2D01_4, $ms2D01_4], output_dir='$od/example_dg_quarteroni2/%s'" .\run_dg_conv_study.py
 soops-run -o .\$od\example_dg_quarteroni3 "problem_file='advection/example_dg_quarteroni3', --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2, .1, 1], mesh=[$mt2D01_4, $ms2D01_4], output_dir='$od/example_dg_quarteroni3/%s'" .\run_dg_conv_study.py
 
-$ex="example_dg_burgess1D_hesthaven"
-soops-run -o .\$od\$ex "problem_file='burgess/$ex', --limit=[@defined, @undefined], --cfl=[1e-3, 1e-2], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2], mesh=[$mt1D11_2], output_dir='$od/$ex/%s'" .\run_dg_conv_study.py
+$ex="example_dg_burgers1D_hesthaven"
+soops-run -o .\$od\$ex "problem_file='burgers/$ex', --limit=[@defined, @undefined], --cfl=[1e-3, 1e-2], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2], mesh=[$mt1D11_2], output_dir='$od/$ex/%s'" .\run_dg_conv_study.py
 
-$ex='example_dg_burgess2D_kucera'
-soops-run -o .\$od\$ex -c '--cw + --diffscheme' "problem_file='burgess/$ex', --dt=[1e-5], --cw=[1, 5 , 15], --diffcoef=[1e-2, 0.1], --diffscheme=[symmetric, non-symmetric, incomplete], mesh=[$mt2D11_4, $ms2D11_4], --refines='[1,2,3,4,5]', --orders='[1,2]', output_dir='$od/$ex/%s'" .\run_dg_conv_study.py
+$ex='example_dg_burgers2D_kucera'
+soops-run -o .\$od\$ex -c '--cw + --diffscheme' "problem_file='burgers/$ex', --dt=[1e-5], --cw=[1, 5 , 15], --diffcoef=[1e-2, 0.1], --diffscheme=[symmetric, non-symmetric, incomplete], mesh=[$mt2D11_4, $ms2D11_4], --refines='[1,2,3,4,5]', --orders='[1,2]', output_dir='$od/$ex/%s'" .\run_dg_conv_study.py
 
 $ex="example_dg_diffusion1D_hesthaven.py"
 soops-run -o .\$od\$ex "problem_file='diffusion/$ex', --cfl=[1e-3, 1e-2], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-2], mesh=['mesh/mesh_tensr_1D_0-2pi_100.vtk'], --refines='[0,1,2]', output_dir='$od/$ex/%s'" .\run_dg_conv_study.py

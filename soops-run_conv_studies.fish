@@ -26,15 +26,15 @@ soops-run -o $elout/example_dg_quarteroni4 "problem_file='advection/example_dg_q
                                             --flux=[0.0, 0.5, 1.0], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2, .1, 1],
                                             mesh=['mesh/mesh_tensr_2D_01_4.vtk', 'mesh/mesh_simp_2D_01_4.vtk'], output_dir='$elout/example_dg_quarteroni4/%s'" run_dg_conv_study.py
 
-soops-run -o $elout/example_dg_burgess1D_hesthaven "problem_file='burgess/example_dg_burgess1D_hesthaven',
+soops-run -o $elout/example_dg_burgers1D_hesthaven "problem_file='burgers/example_dg_burgers1D_hesthaven',
                                                     --adflux=[0.0, 0.5, 1.0], --limit=[@defined, @undefined], --cfl=[1e-3, 1e-2],
                                                     --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2],
-                                                    mesh=['mesh/mesh_tensr_1D_11_2.vtk'], output_dir='$elout/example_dg_burgess1D_hesthaven/%s'" run_dg_conv_study.py
+                                                    mesh=['mesh/mesh_tensr_1D_11_2.vtk'], output_dir='$elout/example_dg_burgers1D_hesthaven/%s'" run_dg_conv_study.py
 
-soops-run -o $elout/example_dg_burgess2D_kucera "problem_file='burgess/example_dg_burgess2D_kucera',
+soops-run -o $elout/example_dg_burgers2D_kucera "problem_file='burgers/example_dg_burgers2D_kucera',
                                                  --adflux=[0.0, 0.5, 1.0], --limit=[@defined, @undefined], --dt=[1e-5],
                                                  --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-2],
-                                                 mesh=['mesh/mesh_tensr_2D_11_4.vtk', 'mesh/mesh_simp_2D_11_4.vtk'], output_dir='$elout/example_dg_burgess2D_kucera/%s'" run_dg_conv_study.py
+                                                 mesh=['mesh/mesh_tensr_2D_11_4.vtk', 'mesh/mesh_simp_2D_11_4.vtk'], output_dir='$elout/example_dg_burgers2D_kucera/%s'" run_dg_conv_study.py
 
 soops-run -o $elout/example_dg_diffusion1D_hesthaven "problem_file='diffusion/example_dg_diffusion1D_hesthaven',
                                                       --cfl=[1e-3, 1e-2], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-2],

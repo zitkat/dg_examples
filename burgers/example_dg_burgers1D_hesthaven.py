@@ -34,7 +34,7 @@ def define(filename_mesh=None,
 
         return fun
 
-    example_name = "burgess_hesthaven"
+    example_name = "burgers_hesthaven"
     dim = 1
 
     if filename_mesh is None:
