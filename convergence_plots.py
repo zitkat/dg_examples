@@ -218,10 +218,11 @@ def plot_agregated_var(df, y_var, x_var, color_var,
     ax.add_artist(lb)
 
     lb = Legend(ax, oline,
-                labels=color_vals,
-                title=cor_lab, borderaxespad=-figsize[0] - 1,
-                loc="lower center",
-                ncol=len(oline) // 2 if len(oline) > 4 else len(oline))
+                labels=[f"{cv:.0e}" for cv in color_vals],
+                title=cor_lab, borderaxespad=-figsize[0],
+                loc="center right",
+                ncol=1  # len(oline) // 2 if len(oline) > 4 else len(oline)
+                )
     ax.add_artist(lb)
 
     ax.set_ylabel(y_lab)
