@@ -11,18 +11,18 @@ soops-run -o $elout/example_dg_advection1D "problem_file='advection/example_dg_a
                                             --cfl=[0.1, .5], --adflux=[0.0, 0.5, 1.0] , --limit=[@defined, @undefined],
                                             mesh=['mesh/mesh_tensr_1D_01_2.vtk'], output_dir='$elout/example_dg_advection1D/%s'" run_dg_conv_study.py
 
-soops-run -o $elout/example_dg_quarteroni1 "problem_file='advection/example_dg_quarteroni1',
+soops-run -o $elout/example_dg_quarteroni1 "problem_file='advdiff/example_dg_quarteroni1',
                                             --flux=[0.0, 0.5, 1.0], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2, .1, 1],
                                             mesh=['mesh/mesh_tensr_2D_01_4.vtk', 'mesh/mesh_simp_2D_01_4.vtk'], output_dir='$elout/example_dg_quarteroni1/%s'" run_dg_conv_study.py
 
-soops-run -o $elout/example_dg_quarteroni2 "problem_file='advection/example_dg_quarteroni2',
+soops-run -o $elout/example_dg_quarteroni2 "problem_file='advdiff/example_dg_quarteroni2',
                                             --flux=[0.0, 0.5, 1.0], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2, .1, 1],
                                             mesh=['mesh/mesh_tensr_2D_01_4.vtk', 'mesh/mesh_simp_2D_01_4.vtk'], output_dir='$elout/example_dg_quarteroni2/%s'" run_dg_conv_study.py
-soops-run -o $elout/example_dg_quarteroni3 "problem_file='advection/example_dg_quarteroni3',
+soops-run -o $elout/example_dg_quarteroni3 "problem_file='advdiff/example_dg_quarteroni3',
                                             --flux=[0.0, 0.5, 1.0], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2, .1, 1],
                                             mesh=['mesh/mesh_tensr_2D_01_4.vtk', 'mesh/mesh_simp_2D_01_4.vtk'], output_dir='$elout/example_dg_quarteroni3/%s'" run_dg_conv_study.py
 
-soops-run -o $elout/example_dg_quarteroni4 "problem_file='advection/example_dg_quarteroni1',
+soops-run -o $elout/example_dg_quarteroni4 "problem_file='advdiff/example_dg_quarteroni1',
                                             --flux=[0.0, 0.5, 1.0], --cw=[1, 10, 100, 1e3, 1e4, 1e5], --diffcoef=[1e-3, 1e-2, .1, 1],
                                             mesh=['mesh/mesh_tensr_2D_01_4.vtk', 'mesh/mesh_simp_2D_01_4.vtk'], output_dir='$elout/example_dg_quarteroni4/%s'" run_dg_conv_study.py
 

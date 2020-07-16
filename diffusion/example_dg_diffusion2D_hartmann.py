@@ -1,8 +1,9 @@
 """
 Based on
 
-Ralf Hartmann. Numerical Analysis of Higher Order Discontinuous Galerkin Finite Element methods.
-Institute of Aerodynamic and Flow Technology DLR (German Aerospace Center). 13. Oct. 2008
+Ralf Hartmann. Numerical Analysis of Higher Order Discontinuous Galerkin
+    Finite Element methods. Institute of Aerodynamic and Flow Technology DLR
+    (German Aerospace Center). 13. Oct. 2008
 """
 from example_dg_common import *
 

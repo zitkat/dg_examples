@@ -1,8 +1,8 @@
 """
 Based on
 
-Antonietti, P., & Quarteroni, A. (2013). Numerical performance of discontinuous and stabilized
-    continuous Galerkin methods for convection–diffusion problems.
+Antonietti, P., & Quarteroni, A. (2013). Numerical performance of discontinuous
+   and stabilized continuous Galerkin methods for convection–diffusion problems.
 """
 
 from example_dg_common import *

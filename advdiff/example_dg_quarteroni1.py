@@ -1,8 +1,8 @@
 """
 Based on
 
-Antonietti, P., & Quarteroni, A. (2013). Numerical performance of discontinuous and stabilized
-    continuous Galerkin methods for convection–diffusion problems.
+Antonietti, P., & Quarteroni, A. (2013). Numerical performance of discontinuous
+   and stabilized continuous Galerkin methods for convection–diffusion problems.
 """
 
 from example_dg_common import *
@@ -25,7 +25,6 @@ def define(filename_mesh=None,
     dt = None
 
     functions = {}
-
     def local_register_function(fun):
         try:
             functions.update({fun.__name__: (fun,)})
@@ -58,8 +57,8 @@ def define(filename_mesh=None,
     }
 
     fields = {
-        'f': (
-        'real', 'scalar', 'Omega', str(approx_order) + 'd', 'DG', 'legendre')
+        'f': ('real', 'scalar', 'Omega',
+              str(approx_order) + 'd', 'DG', 'legendre')
     }
 
     variables = {

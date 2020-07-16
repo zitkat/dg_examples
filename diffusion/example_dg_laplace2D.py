@@ -19,6 +19,9 @@ p = 0    |                           | p = 0
                     p = 0
 
 solution to this is 1/2*x**2 - 1/2*y**2 - a*x + b*y
+Based on
+    Holubová, G., & Drábek, P. (2011). Parciální diferenciální rovnice.
+    problem 8.4 (3), p. 150
 """
 
 from example_dg_common import *
@@ -69,7 +72,8 @@ def define(filename_mesh=None,
         'bottom': ('vertices in y == 0', 'edge')
     }
     fields = {
-        'f': ('real', 'scalar', 'Omega', str(approx_order) + 'd', 'DG', 'legendre')  #
+        'f': ('real', 'scalar', 'Omega',
+              str(approx_order) + 'd', 'DG', 'legendre')  #
     }
 
     variables = {
@@ -158,8 +162,7 @@ def define(filename_mesh=None,
         'nls'             : 'newton',
         'ls'              : 'ls',
         'output_format'   : 'msh',
-		'file_format'     : 'gmsh-dg',
-        # 'pre_process_hook': get_cfl_setup(cfl)
+        'file_format'     : 'gmsh-dg',
     }
     return locals()
 

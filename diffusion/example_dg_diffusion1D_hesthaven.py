@@ -2,10 +2,10 @@
 
 Simple example for second order ODE
 
-    du^2/dx^2 = g
+    dp^2/dx^2 = g
 
     p(0) = p(1) = 0
-    du/dx(0) = du/dx(0) = 2*pi
+    dp/dx(0) = dp/dx(0) = 2*pi
 
 """
 from example_dg_common import *

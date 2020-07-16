@@ -10,7 +10,6 @@ from example_dg_common import *
 from sfepy import data_dir
 
 
-
 mesh_center = (0, 0)
 mesh_size = (2, 2)
 
